@@ -1,5 +1,12 @@
 # Blockchain Demo
 
+## Run server
+
+```bash
+pip install -r requirements.txt
+FLASK_APP=app.py flask run
+```
+
 ## Terms
 
 **Gensis block**  [Link](https://en.bitcoin.it/wiki/Genesis_block)
