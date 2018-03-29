@@ -9,5 +9,6 @@
 ## Reference
 
 - [Let’s Build the Tiniest Blockchain – Crypto Currently – Medium](https://medium.com/crypto-currently/lets-build-the-tiniest-blockchain-e70965a248b)
+- [Let’s Make the Tiniest Blockchain Bigger – Crypto Currently – Medium](https://medium.com/crypto-currently/lets-make-the-tiniest-blockchain-bigger-ac360a328f4d)
 - [Blockchain Demo](https://anders.com/blockchain/blockchain.html)
 
