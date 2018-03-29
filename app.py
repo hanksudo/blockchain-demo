@@ -26,7 +26,10 @@ class Block:
 
 def create_genesis_block():
     # Manually construct a block with `index zero` and arbitrary `previous hash`
-    return Block(0, datetime.now(), "Genesis Block", "0")
+    return Block(0, datetime.now(), {
+        "proof-of-work": 9,
+        "transactions": None
+    }, "0")
 
 def next_block(last_block):
     next_index = last_block.index + 1
@@ -39,22 +42,6 @@ previous_block = blockchain[0]
 
 # Store url data of every other node in the network so that we can communicate with them
 peer_nodes = []
-
-# How many blocks should we add to the chain after the genesis block
-num_of_blocks_to_add = 20
-
-# Add blocks to the chain
-for i in range(0, num_of_blocks_to_add):
-    block_to_add = next_block(previous_block)
-    blockchain.append(block_to_add)
-    previous_block = block_to_add
-
-    # Log
-    print("Block #{0} has been added to the blockchain!".format(block_to_add.index))
-    print("Hash: {}".format(block_to_add.hash))
-    print(block_to_add.timestamp)
-    print
-
 
 # Store the transactions this node has in a list.
 node_transactions = []
@@ -135,14 +122,14 @@ def mine():
         "hash": last_block_hash
     }) + "\n"
 
-@node.router("/blocks", method=["GET"])
+@node.route("/blocks", methods=["GET"])
 def get_blocks():
-    return json.dumps({
+    return json.dumps(list({
         "index": str(block.index),
         "timestamp": str(block.timestamp),
         "data": str(block.data),
         "hash": block.hash
-    } for block in blockchain)
+    } for block in blockchain))
 
 def find_new_chains():
     # Get the blockchains of every other node
@@ -152,3 +139,14 @@ def find_new_chains():
         block = requests.get(node_url + "/blocks").json()
         other_chains.append(block)
     return other_chains
+
+def consensus():
+    # Get blocks from other nodes
+    other_chains = find_new_chains()
+    # If our chain not longest, then we store the longest chain
+    longest_chain = blockchain
+    for chain in other_chains:
+        if len(longest_chain) < len(chain):
+            longest_chain = chain
+
+    blockchain = longest_chain
