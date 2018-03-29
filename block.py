@@ -2,6 +2,7 @@ import hashlib
 import json
 from datetime import datetime
 
+import requests
 from flask import Flask, request
 
 node = Flask(__name__)
@@ -35,6 +36,9 @@ def next_block(last_block):
 # Create the blockchain and add the genesis block
 blockchain = [create_genesis_block()]
 previous_block = blockchain[0]
+
+# Store url data of every other node in the network so that we can communicate with them
+peer_nodes = []
 
 # How many blocks should we add to the chain after the genesis block
 num_of_blocks_to_add = 20
@@ -130,3 +134,21 @@ def mine():
         "data": new_block_data,
         "hash": last_block_hash
     }) + "\n"
+
+@node.router("/blocks", method=["GET"])
+def get_blocks():
+    return json.dumps({
+        "index": str(block.index),
+        "timestamp": str(block.timestamp),
+        "data": str(block.data),
+        "hash": block.hash
+    } for block in blockchain)
+
+def find_new_chains():
+    # Get the blockchains of every other node
+    other_chains = []
+    for node_url in peer_nodes:
+        # Get chains
+        block = requests.get(node_url + "/blocks").json()
+        other_chains.append(block)
+    return other_chains
